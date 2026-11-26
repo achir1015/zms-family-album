@@ -1,0 +1,402 @@
+[
+ {
+  "file": "m01.m4a",
+  "name": "永恆的希望",
+  "group": "溫馨抒情",
+  "title": "Eternal Hope",
+  "dur": 284.1,
+  "feel": "Calming, Uplifting, Relaxed",
+  "bpm": "",
+  "credit": "\"Eternal Hope\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m02.m4a",
+  "name": "晶瑩鋼琴",
+  "group": "溫馨抒情",
+  "title": "Aretes",
+  "dur": 276.5,
+  "feel": "Calming, Uplifting",
+  "bpm": "57",
+  "credit": "\"Aretes\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m03.m4a",
+  "name": "清新空氣",
+  "group": "溫馨抒情",
+  "title": "Fresh Air",
+  "dur": 294.1,
+  "feel": "Calming, Relaxed",
+  "bpm": "44",
+  "credit": "\"Fresh Air\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m04.m4a",
+  "name": "冰上的夢",
+  "group": "溫馨抒情",
+  "title": "Crinoline Dreams",
+  "dur": 246.5,
+  "feel": "Bright, Calming, Relaxed",
+  "bpm": "120",
+  "credit": "\"Crinoline Dreams\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m05.m4a",
+  "name": "晨光漫步",
+  "group": "溫馨抒情",
+  "title": "Bumba Crossing",
+  "dur": 277.0,
+  "feel": "Bright, Calming",
+  "bpm": "92",
+  "credit": "\"Bumba Crossing\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m06.m4a",
+  "name": "啟程",
+  "group": "溫馨抒情",
+  "title": "Inspired",
+  "dur": 286.1,
+  "feel": "Bright, Relaxed, Calming, Uplifting",
+  "bpm": "120",
+  "credit": "\"Inspired\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m07.m4a",
+  "name": "幸福時光",
+  "group": "溫馨抒情",
+  "title": "Almost Bliss",
+  "dur": 316.6,
+  "feel": "Bright, Calming, Relaxed",
+  "bpm": "90",
+  "credit": "\"Almost Bliss\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m08.m4a",
+  "name": "螢火與星塵",
+  "group": "溫馨抒情",
+  "title": "Fireflies and Stardust",
+  "dur": 255.1,
+  "feel": "Bright, Calming, Relaxed",
+  "bpm": "170",
+  "credit": "\"Fireflies and Stardust\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m09.m4a",
+  "name": "北方林間",
+  "group": "溫馨抒情",
+  "title": "Northern Glade",
+  "dur": 315.1,
+  "feel": "Bright, Calming, Relaxed",
+  "bpm": "78",
+  "credit": "\"Northern Glade\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m10.m4a",
+  "name": "田園時光",
+  "group": "溫馨抒情",
+  "title": "Farm",
+  "dur": 292.4,
+  "feel": "Bright, Calming, Relaxed",
+  "bpm": "78",
+  "credit": "\"Farm\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m11.m4a",
+  "name": "寧靜飛船",
+  "group": "溫馨抒情",
+  "title": "Airship Serenity",
+  "dur": 240.1,
+  "feel": "Calming, Uplifting",
+  "bpm": "74",
+  "credit": "\"Airship Serenity\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m12.m4a",
+  "name": "卡農（星空版）",
+  "group": "溫馨抒情",
+  "title": "Canon In D Interstellar Mix",
+  "dur": 287.6,
+  "feel": "Bright, Calming, Relaxed",
+  "bpm": "96",
+  "credit": "\"Canon In D Interstellar Mix\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m13.m4a",
+  "name": "把握當下",
+  "group": "輕快活潑",
+  "title": "Carpe Diem",
+  "dur": 295.1,
+  "feel": "Bouncy, Bright, Uplifting",
+  "bpm": "96",
+  "credit": "\"Carpe Diem\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m14.m4a",
+  "name": "快樂每一天",
+  "group": "輕快活潑",
+  "title": "Daily Beetle",
+  "dur": 316.9,
+  "feel": "Calming, Bouncy",
+  "bpm": "100",
+  "credit": "\"Daily Beetle\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m15.m4a",
+  "name": "開心飛翔",
+  "group": "輕快活潑",
+  "title": "Flying Kerfuffle",
+  "dur": 250.1,
+  "feel": "Bouncy, Bright, Uplifting",
+  "bpm": "144",
+  "credit": "\"Flying Kerfuffle\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m16.m4a",
+  "name": "快樂蜜蜂",
+  "group": "輕快活潑",
+  "title": "Happy Bee",
+  "dur": 302.1,
+  "feel": "Bouncy, Bright, Uplifting",
+  "bpm": "122",
+  "credit": "\"Happy Bee\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m17.m4a",
+  "name": "毛球遊行",
+  "group": "輕快活潑",
+  "title": "Fuzzball Parade",
+  "dur": 313.6,
+  "feel": "Bouncy, Bright, Grooving",
+  "bpm": "98",
+  "credit": "\"Fuzzball Parade\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m18.m4a",
+  "name": "鄉村彈奏",
+  "group": "輕快活潑",
+  "title": "Still Pickin",
+  "dur": 297.7,
+  "feel": "Bouncy, Bright, Grooving",
+  "bpm": "100",
+  "credit": "\"Still Pickin\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m19.m4a",
+  "name": "馬車輪鋼琴曲",
+  "group": "輕快活潑",
+  "title": "Wagon Wheel",
+  "dur": 303.6,
+  "feel": "Bouncy, Bright, Humorous",
+  "bpm": "155",
+  "credit": "\"Wagon Wheel\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m20.m4a",
+  "name": "電子泡泡",
+  "group": "輕快活潑",
+  "title": "Blip Stream",
+  "dur": 284.9,
+  "feel": "Bouncy, Bright, Uplifting",
+  "bpm": "150",
+  "credit": "\"Blip Stream\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m21.m4a",
+  "name": "可愛狐狸",
+  "group": "輕快活潑",
+  "title": "Kawai Kitsune",
+  "dur": 242.2,
+  "feel": "Bouncy, Bright, Calming",
+  "bpm": "116",
+  "credit": "\"Kawai Kitsune\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m22.m4a",
+  "name": "探險樂園",
+  "group": "輕快活潑",
+  "title": "Adventures in Adventureland",
+  "dur": 261.3,
+  "feel": "Action, Bright, Grooving",
+  "bpm": "135",
+  "credit": "\"Adventures in Adventureland\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m23.m4a",
+  "name": "冒險的呼喚",
+  "group": "輕快活潑",
+  "title": "Call to Adventure",
+  "dur": 247.3,
+  "feel": "Action, Bright, Bouncy, Humorous, Epic",
+  "bpm": "178",
+  "credit": "\"Call to Adventure\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m24.m4a",
+  "name": "茅屋村莊",
+  "group": "輕快活潑",
+  "title": "Thatched Villagers",
+  "dur": 245.2,
+  "feel": "Bouncy, Bright",
+  "bpm": "95",
+  "credit": "\"Thatched Villagers\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m25.m4a",
+  "name": "放克節奏",
+  "group": "運動活力",
+  "title": "Got Funk",
+  "dur": 281.1,
+  "feel": "Bouncy, Bright, Driving, Grooving",
+  "bpm": "98",
+  "credit": "\"Got Funk\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m26.m4a",
+  "name": "動感舞曲",
+  "group": "運動活力",
+  "title": "Realizer",
+  "dur": 310.2,
+  "feel": "Grooving, Bright, Driving",
+  "bpm": "125",
+  "credit": "\"Realizer\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m27.m4a",
+  "name": "滿滿能量",
+  "group": "運動活力",
+  "title": "Raving Energy",
+  "dur": 267.6,
+  "feel": "Bright, Grooving, Driving",
+  "bpm": "122",
+  "credit": "\"Raving Energy\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m28.m4a",
+  "name": "布吉派對",
+  "group": "運動活力",
+  "title": "Boogie Party",
+  "dur": 271.8,
+  "feel": "Driving, Grooving, Bouncy",
+  "bpm": "178",
+  "credit": "\"Boogie Party\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m29.m4a",
+  "name": "爵士早午餐",
+  "group": "浪漫爵士",
+  "title": "Jazz Brunch",
+  "dur": 323.2,
+  "feel": "Bright, Grooving, Relaxed",
+  "bpm": "100",
+  "credit": "\"Jazz Brunch\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m30.m4a",
+  "name": "巴薩諾瓦",
+  "group": "浪漫爵士",
+  "title": "Bossa Antigua",
+  "dur": 283.4,
+  "feel": "Bright, Grooving, Relaxed",
+  "bpm": "70",
+  "credit": "\"Bossa Antigua\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m31.m4a",
+  "name": "海灣酒廊",
+  "group": "浪漫爵士",
+  "title": "Backbay Lounge",
+  "dur": 266.6,
+  "feel": "Bright, Grooving, Relaxed",
+  "bpm": "120",
+  "credit": "\"Backbay Lounge\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m32.m4a",
+  "name": "小酌時光",
+  "group": "浪漫爵士",
+  "title": "Apero Hour",
+  "dur": 283.1,
+  "feel": "Bright, Grooving, Relaxed",
+  "bpm": "140",
+  "credit": "\"Apero Hour\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m33.m4a",
+  "name": "森巴晚餐",
+  "group": "浪漫爵士",
+  "title": "Samba Isobel",
+  "dur": 250.2,
+  "feel": "Bright, Grooving, Relaxed",
+  "bpm": "95",
+  "credit": "\"Samba Isobel\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m34.m4a",
+  "name": "街角漫步",
+  "group": "浪漫爵士",
+  "title": "George Street Shuffle",
+  "dur": 268.4,
+  "feel": "Bouncy, Grooving, Relaxed",
+  "bpm": "153",
+  "credit": "\"George Street Shuffle\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m35.m4a",
+  "name": "輕盈午後",
+  "group": "浪漫爵士",
+  "title": "Airport Lounge",
+  "dur": 307.7,
+  "feel": "Bouncy, Calming, Relaxed",
+  "bpm": "129",
+  "credit": "\"Airport Lounge\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m36.m4a",
+  "name": "夏日戀曲",
+  "group": "浪漫爵士",
+  "title": "Verano Sensual",
+  "dur": 301.4,
+  "feel": "Bouncy, Bright, Grooving",
+  "bpm": "103",
+  "credit": "\"Verano Sensual\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m37.m4a",
+  "name": "深夜電台",
+  "group": "浪漫爵士",
+  "title": "Late Night Radio",
+  "dur": 263.7,
+  "feel": "Calming, Relaxed",
+  "bpm": "72",
+  "credit": "\"Late Night Radio\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m38.m4a",
+  "name": "婚禮華爾滋",
+  "group": "浪漫爵士",
+  "title": "Devonshire Waltz Allegretto",
+  "dur": 313.5,
+  "feel": "Relaxed, Calming, Grooving",
+  "bpm": "104",
+  "credit": "\"Devonshire Waltz Allegretto\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m39.m4a",
+  "name": "聖誕歡唱",
+  "group": "節慶",
+  "title": "Deck the Halls B",
+  "dur": 265.4,
+  "feel": "Bouncy, Bright, Uplifting",
+  "bpm": "180",
+  "credit": "\"Deck the Halls B\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ },
+ {
+  "file": "m40.m4a",
+  "name": "平安夜鋼琴",
+  "group": "節慶",
+  "title": "It Came Upon a Midnight Clear",
+  "dur": 265.6,
+  "feel": "Relaxed, Calming",
+  "bpm": "78",
+  "credit": "\"It Came Upon a Midnight Clear\" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0"
+ }
+]

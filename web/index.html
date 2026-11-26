@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>資料助秘家庭相簿編輯</title>
+<link rel="icon" href="assets/icon.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="splash" class="screen show">
+  <img src="assets/icon.png" alt="" class="splash-logo">
+  <h1>資料助秘家庭相簿編輯</h1>
+  <p id="splash-msg">啟動中，正在準備資料庫…</p>
+  <div class="spinner"></div>
+</div>
+
+<!-- 登入 -->
+<div id="login" class="screen">
+  <div class="login-card">
+    <img src="assets/icon.png" alt="" class="login-logo">
+    <h1>資料助秘家庭相簿編輯</h1>
+    <p class="sub" id="login-sub">請登入</p>
+    <div id="login-form"></div>
+    <p class="credit" id="credit"></p>
+  </div>
+</div>
+
+<!-- 相簿清單 -->
+<div id="home" class="screen">
+  <header class="topbar">
+    <img src="assets/icon.png" class="tb-logo" alt="">
+    <div class="tb-title">資料助秘家庭相簿編輯</div>
+    <div class="spacer"></div>
+    <button class="tbtn" id="home-guide" data-tip="語音動態教學">🔊 語音教學</button>
+    <button class="tbtn" id="home-user">👤 <span class="uname"></span> ▾</button>
+  </header>
+  <div class="home-body">
+    <div class="home-head">
+      <h2>我的相簿</h2>
+      <div class="spacer"></div>
+      <button class="btn big" id="btn-sample" title="用內建的 40 張範例相片（AI 產生，不是真人）做一本畢業紀念相簿">🎓 建立範本相簿</button>
+      <button class="btn primary big" id="btn-new" style="margin-left:8px">＋ 新增相簿</button>
+    </div>
+    <div id="project-grid" class="project-grid"></div>
+  </div>
+</div>
+
+<!-- 編輯 -->
+<div id="editor" class="screen">
+  <header class="topbar">
+    <button class="tbtn" id="btn-back" title="回到相簿清單">◀ 相簿清單</button>
+    <input id="proj-name" class="proj-name" maxlength="100" title="相簿名稱（點一下可以改）">
+    <nav class="steps">
+      <button data-tab="organize" class="step on"><b>1</b> 整理</button>
+      <button data-tab="personalize" class="step"><b>2</b> 個人化</button>
+      <button data-tab="create" class="step"><b>3</b> 製作</button>
+    </nav>
+    <div class="spacer"></div>
+    <span id="save-state" class="save-state"></span>
+    <button class="tbtn" id="btn-undo" title="復原（Ctrl+Z）">↶ 復原</button>
+    <button class="tbtn" id="btn-redo" title="重做（Ctrl+Y）">↷ 重做</button>
+    <button class="tbtn" id="btn-aspect" title="一鍵切換 16:9 與 4:3">16:9</button>
+    <button class="tbtn" id="btn-guide" title="語音動態教學">🔊 語音教學</button>
+    <button class="tbtn" id="ed-user">👤 <span class="uname"></span> ▾</button>
+  </header>
+  <main class="ed-main">
+    <!-- 1 整理 -->
+    <section id="tab-organize" class="tab on">
+      <aside class="shows">
+        <div class="pane-title">影片段 <button class="mini" id="show-add" title="新增一段影片">＋</button></div>
+        <div id="show-list"></div>
+        <p class="hint">一本相簿可以有好幾段影片，輸出時會接在一起。</p>
+      </aside>
+      <div class="org-center">
+        <div class="toolbar" id="org-tools">
+          <button class="btn primary" id="btn-add-files">＋ 加入相片／影片</button>
+          <button class="btn" id="btn-rot-l" title="向左轉 90 度">⟲ 向左轉</button>
+          <button class="btn" id="btn-rot-r" title="向右轉 90 度">⟳ 向右轉</button>
+          <button class="btn" id="btn-edit" title="裁切、特效、紅眼、調色">✎ 編輯</button>
+          <button class="btn" id="btn-del" title="從影片移除（素材仍保留）">🗑 移除</button>
+          <div class="spacer"></div>
+          <label class="inline">排序
+            <select id="sort-by"><option value="">—</option><option value="taken">拍攝日期</option><option value="name">檔名</option><option value="random">隨機</option><option value="reverse">反轉順序</option></select>
+          </label>
+          <label class="inline">每張 <input type="number" id="all-dur" min="1" max="60" step="0.5" value="5" class="num"> 秒 <button class="mini" id="btn-all-dur">全部套用</button></label>
+        </div>
+        <div id="org-grid" class="org-grid"></div>
+        <div class="drop-hint" id="drop-hint">把相片或影片拖進來，或按「加入相片／影片」</div>
+      </div>
+      <aside class="org-right">
+        <div class="player-slot" data-slot="organize"></div>
+        <div id="org-props" class="props"></div>
+      </aside>
+    </section>
+    <!-- 2 個人化 -->
+    <section id="tab-personalize" class="tab">
+      <aside class="lib">
+        <div class="lib-tabs" id="lib-tabs"></div>
+        <div class="lib-body" id="lib-body"></div>
+      </aside>
+      <div class="pz-center"><div class="player-slot" data-slot="personalize"></div></div>
+      <aside class="inspector" id="inspector"></aside>
+    </section>
+    <!-- 3 製作 -->
+    <section id="tab-create" class="tab">
+      <aside class="out-cats" id="out-cats"></aside>
+      <div class="out-center">
+        <div id="out-presets" class="out-presets"></div>
+        <div id="out-settings" class="out-settings"></div>
+      </div>
+      <aside class="out-right">
+        <div class="player-slot" data-slot="create"></div>
+        <div id="out-history" class="out-history"></div>
+      </aside>
+    </section>
+    <!-- 下方：腳本／時間軸 -->
+    <footer id="bottom" class="bottom">
+      <div class="bottom-bar">
+        <button class="btn sm" id="tl-add-music">♫ 音樂</button>
+        <button class="btn sm" id="tl-add-voice">🎤 錄旁白</button>
+        <button class="btn sm" id="tl-add-title">T 文字</button>
+        <button class="btn sm" id="tl-split" title="把選取的影片在播放頭位置切成兩段">✂ 分割</button>
+        <button class="btn sm" id="tl-del">🗑 刪除</button>
+        <div class="spacer"></div>
+        <label class="inline zoomlbl">縮放 <input type="range" id="tl-zoom" min="10" max="200" value="40"></label>
+        <div class="seg"><button id="view-story" class="on">▦ 腳本</button><button id="view-time">☰ 時間軸</button></div>
+      </div>
+      <div id="storyboard" class="storyboard"></div>
+      <div id="timeline" class="timeline hidden"></div>
+    </footer>
+  </main>
+</div>
+
+<input type="file" id="file-input" multiple hidden accept="image/*,video/*,.heic,.tif,.tiff,.avi,.wmv,.mpg,.mpeg,.3gp,.mkv,.flv,.mts,.m2ts">
+<input type="file" id="audio-input" multiple hidden accept="audio/*,.mp3,.wav,.ogg,.m4a,.wma,.flac">
+
+<script src="lib/transitions.js"></script>
+<script src="assets/clipart/index.js"></script>
+<script src="js/api.js"></script>
+<script src="js/styles.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/app.js"></script>
+<script src="js/player.js"></script>
+<script src="js/organize.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/personalize.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/create.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/lessons.js"></script>
+<script src="js/tutorial.js"></script>
+<script>FA.boot();</script>
+</body>
+</html>

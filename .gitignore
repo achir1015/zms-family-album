@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+data/
+build/
+dist/
+dist-installer/
+*.log
+data_web.log
+samples.log
+packaging/mariadb/
+packaging/ffmpeg/
+tools/gl-transitions.json
+web/assets/music/*.m4a
+*.spec
