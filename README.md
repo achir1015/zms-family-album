@@ -1,4 +1,5 @@
 # 資料助秘家庭相簿編輯
+<img width="2000" height="923" alt="image" src="https://github.com/user-attachments/assets/7a109396-da9d-475f-bb8e-6ccf2891b92f" />
 
 把相片、影片、音樂做成有轉場、字幕、動態效果的相簿影片。操作方式參考 DVD 相簿製作軟體，分成三個步驟：**整理 → 個人化 → 製作**。
 
