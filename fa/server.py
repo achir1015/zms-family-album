@@ -14,7 +14,7 @@ import traceback
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import APP_NAME, APP_VERSION, CREDIT, maintenance, presets
+from . import APP_NAME, APP_VERSION, CREDIT, maintenance, presets, youtube
 from .album import Album, BizError, kind_of
 from .export import JOBS, Job, cancel_stale, unique_path
 from .seed import FUNCS, ROLES
@@ -320,7 +320,7 @@ def api_export_finish(h, q, body):
         raise ApiError("輸出失敗：" + str(e)[-400:])
     a.export_end(j.export_id, "DONE", path)
     JOBS.pop(j.id, None)
-    return dict(path=path, size=os.path.getsize(path))
+    return dict(path=path, size=os.path.getsize(path), export_id=j.export_id)
 
 
 def api_export_cancel(h, q, body):
@@ -333,6 +333,86 @@ def api_export_cancel(h, q, body):
 
 def api_exports(h, q, body):
     return _sess(h, q).exports(int(q["pid"]) if q.get("pid") else None)
+
+
+# ---------------------------------------------------------------- YouTube 上傳
+def _yt(fn):
+    try:
+        return fn()
+    except youtube.YTError as e:
+        raise BizError(str(e))
+
+
+def api_yt_status(h, q, body):
+    a = _sess(h, q)
+    out = youtube.status(STATE["db"], a.uid)
+    out["can_setup"] = a.can("SYS", 2)
+    return out
+
+
+def api_yt_client(h, q, body):
+    """系統管理員：讀取（只顯示部分）或儲存 OAuth 用戶端。body: {id, secret} 或 {json: 檔案內容} 或 {clear: true}"""
+    a = _sess(h, q)
+    a.need("SYS", 2)
+    db = STATE["db"]
+    if body.get("clear"):
+        _yt(lambda: youtube.save_client(db, "", ""))
+        a.log("yt_client", "", "清除")
+    elif body.get("json") or body.get("id"):
+        cid, sec = _yt(lambda: youtube.parse_client_json(body["json"])) if body.get("json") else (body.get("id"), body.get("secret"))
+        _yt(lambda: youtube.save_client(db, cid, sec))
+        a.log("yt_client", "", "設定")
+    c = youtube.client(db)
+    return dict(configured=bool(c), id=(c or {}).get("id", ""), secret=("●●●●" + (c or {}).get("secret", "")[-4:]) if c else "",
+                redirect="http://127.0.0.1（電腦版應用程式不用設定重新導向網址）")
+
+
+def api_yt_auth(h, q, body):
+    a = _sess(h, q)
+    a.need("EXPORT", 1)
+    port = h.server.server_address[1]
+    url = _yt(lambda: youtube.auth_url(STATE["db"], a.uid, "http://127.0.0.1:%d/yt-callback" % port))
+    if not os.environ.get("FA_NO_BROWSER"):    # 測試時不開瀏覽器
+        import webbrowser
+        webbrowser.open(url)                    # 用系統瀏覽器登入（Google 不允許在內嵌視窗登入）
+    return dict(url=url)
+
+
+def api_yt_unlink(h, q, body):
+    a = _sess(h, q)
+    youtube.unlink(STATE["db"], a.uid)
+    a.log("yt_unlink", "", "")
+    return {}
+
+
+def api_yt_playlists(h, q, body):
+    a = _sess(h, q)
+    return _yt(lambda: youtube.playlists(STATE["db"], a.uid))
+
+
+def api_yt_upload(h, q, body):
+    """上傳製作紀錄裡的影片（只能上傳自己做的影片）。body: {export_id, title, description, privacy, kids, playlist, tags}"""
+    a = _sess(h, q)
+    a.need("EXPORT", 1)
+    r = STATE["db"].row("SELECT * FROM fa_export WHERE id=%s AND uid=%s AND status='DONE'", (int(body.get("export_id") or 0), a.uid))
+    if not r or not r["path"] or not os.path.isfile(r["path"]):
+        raise BizError("找不到這支影片（可能已經被移動或刪除）")
+    jid = _yt(lambda: youtube.start_upload(lambda: STATE["db"], a.uid, r["path"], body))
+    a.log("yt_upload", str(r["id"]), (body.get("title") or "")[:60])
+    return dict(job=jid)
+
+
+def api_yt_job(h, q, body):
+    a = _sess(h, q)
+    return _yt(lambda: youtube.job_status(q.get("id") or body.get("id") or "", a.uid))
+
+
+def api_yt_cancel(h, q, body):
+    a = _sess(h, q)
+    j = youtube.UPLOADS.get(body.get("id") or "")
+    if j and j["uid"] == a.uid:
+        j["cancel"] = True
+    return {}
 
 
 # ---------------------------------------------------------------- 系統
@@ -392,7 +472,7 @@ def api_shortcut(h, q, body):
 ROUTES = {n[4:]: f for n, f in globals().items() if n.startswith("api_") and callable(f)}
 RAW = {"upload", "export_audio", "export_frame"}
 GET_OK = {"state", "media", "projects", "project", "presets", "exports", "users", "audit", "last_user", "pref",
-          "company", "update_check"}
+          "company", "update_check", "yt_status", "yt_job", "yt_playlists"}
 
 
 # ==================================================================== HTTP
@@ -432,7 +512,30 @@ class Handler(BaseHTTPRequestHandler):
             return self._api(path[5:], q, None)
         if path.startswith("/media/"):
             return self._media(path, q)
+        if path == "/yt-callback":
+            return self._yt_callback(q)
         return self._static(path)
+
+    def _yt_callback(self, q):
+        """Google 登入完成後瀏覽器回到這裡（只有本機看得到）：換權杖、顯示結果頁"""
+        ok, msg = False, ""
+        if q.get("error"):
+            msg = "您沒有允許，或登入被取消（%s）。可以關閉這一頁，回到程式再按一次「連結 YouTube 帳號」。" % q["error"]
+        else:
+            try:
+                _, ch = youtube.finish_auth(STATE["db"], q.get("state"), q.get("code"))
+                ok, msg = True, "已連結 YouTube 頻道「%s」。可以關閉這一頁，回到「資料助秘家庭相簿編輯」上傳影片。" % (ch or "（未取得名稱）")
+            except Exception as e:
+                msg = str(e)
+            finally:
+                if STATE["db"]:
+                    STATE["db"].close()
+        import html as _h
+        page = ("<!doctype html><meta charset=utf-8><title>%s</title><body style=\"font:18px/1.7 sans-serif;background:#1d2530;"
+                "color:#fff;display:flex;align-items:center;justify-content:center;height:90vh\"><div style=\"max-width:560px;"
+                "text-align:center\"><div style=\"font-size:56px\">%s</div><h2>%s</h2><p>%s</p></div>"
+                % (APP_NAME, "✅" if ok else "⚠️", "連結成功" if ok else "連結沒有完成", _h.escape(msg)))
+        return self._send(200, page.encode("utf-8"), "text/html; charset=utf-8")
 
     def do_POST(self):
         path, q = self._q()

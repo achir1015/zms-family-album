@@ -22,7 +22,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, "web", "assets", "samples")
 API = "https://aihorde.net/api/v2"
-UA = "zms-family-album/0.9.0"           # 標明是本程式（Python 預設的 Python-urllib 會被 AI Horde 前端的 Cloudflare 擋）
+UA = "zms-family-album"           # 標明是本程式（Python 預設的 Python-urllib 會被 AI Horde 前端的 Cloudflare 擋）
 HEAD = {"Content-Type": "application/json", "apikey": "0000000000", "User-Agent": UA,
         "Client-Agent": "zms-family-album:0.9.0:unknown"}
 MODEL = "Juggernaut XL"

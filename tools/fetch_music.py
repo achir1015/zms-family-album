@@ -17,7 +17,7 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, "web", "assets", "music")
-UA = "zms-family-album/0.9.0"
+UA = "zms-family-album"
 SRC = "https://incompetech.com/music/royalty-free/mp3-royaltyfree/"
 CATALOG = "https://incompetech.com/music/royalty-free/pieces.json"
 

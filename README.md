@@ -16,8 +16,8 @@ https://github.com/user-attachments/assets/bcbe37b0-3711-4703-bc96-c554770d423e
 
 | 平台 | 下載／使用 |
 |---|---|
-| Windows 11 | [ZMSFamilyAlbum-Setup-0.9.0.exe](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-Setup-0.9.0.exe)（按兩下安裝，會建立桌面捷徑） |
-| macOS（Intel／Apple 晶片） | [ZMSFamilyAlbum-0.9.0-mac.dmg](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.0-mac.dmg)（已公證，拖到「應用程式」） |
+| Windows 11 | [ZMSFamilyAlbum-Setup-0.9.1.exe](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-Setup-0.9.1.exe)（按兩下安裝，會建立桌面捷徑） |
+| macOS（Intel／Apple 晶片） | [ZMSFamilyAlbum-0.9.1-mac.dmg](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.1-mac.dmg)（已公證，拖到「應用程式」） |
 | 線上版（網頁） | https://achir1015.github.io/zms-family-album/ （Chrome／Edge／Safari，相簿存在瀏覽器裡，影片在您的電腦產生，不上傳） |
 | iPhone／iPad | 用 Safari 開 [線上安裝頁](https://achir1015.github.io/zms-family-album/ios/) 按「安裝」（限已登記的裝置） |
 | Android | [ZMSFamilyAlbum-0.9.0-android.apk](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.0-android.apk) |
@@ -53,6 +53,7 @@ https://github.com/user-attachments/assets/bcbe37b0-3711-4703-bc96-c554770d423e
 - Apple（iPhone、iPad、iPod、Apple TV）、手機平板（Android、BlackBerry、Nokia、Windows Mobile）
 - 遊戲機與播放器（PS3/PS4、PSP、Xbox、Wii、NDS、Walkman、電視 USB）
 - 網路分享（YouTube、Facebook、Vimeo、LINE、Instagram）
+- **直接上傳到 YouTube**（電腦版）：連結自己的 YouTube 帳號，一鍵上傳並顯示進度，說明欄自動附背景音樂授權標示；一次性設定見 [YouTube上傳設定.md](YouTube上傳設定.md)
 - 光碟相容：DVD（NTSC／PAL）、VCD、SVCD 規格的 MPEG 影片（燒成影片光碟需另用燒錄軟體）
 
 **其他**

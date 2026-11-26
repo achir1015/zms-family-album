@@ -72,7 +72,7 @@
       ['🔑 變更密碼', changePw],
     ];
     if (FA.can('SYS', 1)) items.push(null, ['👥 使用者與權限', () => FA.Admin.users()], ['🏠 家庭／公司設定', () => FA.Admin.company()], ['📜 操作紀錄', () => FA.Admin.audit()]);
-    if (FA.can('SYS', 2)) items.push(['💾 備份與還原', () => FA.Admin.backup()]);
+    if (FA.can('SYS', 2)) items.push(['💾 備份與還原', () => FA.Admin.backup()], ['▶ YouTube 上傳設定', () => FA.YT.setup()]);
     items.push(null, ['⬆ 檢查更新', () => FA.Admin.update()], ['🖥 建立桌面捷徑', () => FA.Admin.shortcut()], ['ℹ 關於', () => FA.Admin.about()], null, ['🚪 登出', logout]);
     FA.menu(btn, items);
   }

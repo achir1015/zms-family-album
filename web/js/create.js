@@ -60,7 +60,8 @@
       const p = P && P.presets.find((x) => x.id === r.preset);
       box.append(h('div', { class: 'hist' }, h('div', {}, st[r.status] || r.status, '　', p ? p.name : r.preset, '　', r.size ? FA.fmtSize(r.size) : ''),
         h('div', { class: 'p' }, r.created_at + '　' + (r.path || '')),
-        r.exists && FA.native ? h('div', { class: 'row', style: { marginTop: '3px' } }, h('button', { class: 'mini', onclick: () => FA.native.open_file(r.path) }, '▶ 播放'), h('button', { class: 'mini', onclick: () => FA.native.reveal(r.path) }, '📂 開啟資料夾')) : null));
+        r.exists && FA.native ? h('div', { class: 'row', style: { marginTop: '3px' } }, h('button', { class: 'mini', onclick: () => FA.native.open_file(r.path) }, '▶ 播放'), h('button', { class: 'mini', onclick: () => FA.native.reveal(r.path) }, '📂 開啟資料夾'),
+          r.status === 'DONE' && FA.YT ? h('button', { class: 'mini', onclick: () => FA.YT.upload({ export_id: r.id, path: r.path }) }, '⬆ 上傳到 YouTube') : null) : null));
     }
   }
 
@@ -166,8 +167,9 @@
   function done(r, p) {
     const btns = [];
     if (FA.native) btns.push({ label: '📂 開啟資料夾', onClick: () => { FA.native.reveal(r.path); return false; } }, { label: '▶ 播放影片', onClick: () => { FA.native.open_file(r.path); return false; } });
-    if (SHARE[p.id]) btns.push({ label: '🌐 上傳到 ' + p.name, onClick: () => { FA.native ? FA.native.open_url(SHARE[p.id]) : window.open(SHARE[p.id]); FA.native && FA.native.reveal(r.path); return false; } });
-    btns.push({ label: '關閉', primary: true, value: true });
+    if (FA.native && FA.YT && r.export_id) btns.push({ label: '⬆ 直接上傳到 YouTube', primary: p.id === 'youtube', onClick: () => { FA.YT.upload({ export_id: r.export_id, path: r.path }); return true; } });
+    if (SHARE[p.id] && !(p.id === 'youtube' && FA.native && FA.YT)) btns.push({ label: '🌐 上傳到 ' + p.name, onClick: () => { FA.native ? FA.native.open_url(SHARE[p.id]) : window.open(SHARE[p.id]); FA.native && FA.native.reveal(r.path); return false; } });
+    btns.push({ label: '關閉', primary: !btns.some((b) => b.primary), value: true });
     FA.dialog({ title: '🎉 影片製作完成', body: h('div', {}, h('p', {}, (r.web ? '已下載：' : '檔案：') + r.path), h('p', {}, '大小：' + FA.fmtSize(r.size))), buttons: btns });
   }
   FA.on('tab', (t) => { if (t === 'create') render(); });
