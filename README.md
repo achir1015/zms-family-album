@@ -1,5 +1,12 @@
 # 資料助秘家庭相簿編輯
+<img width="320" height="202" alt="image" src="https://github.com/user-attachments/assets/9514408e-6b4a-4800-8ac3-35c73b5c4487" />
+<img width="800" height="504" alt="image" src="https://github.com/user-attachments/assets/00b6eab6-488f-413c-8685-e56e07c7ed01" />
+
 <img width="2000" height="923" alt="image" src="https://github.com/user-attachments/assets/7a109396-da9d-475f-bb8e-6ccf2891b92f" />
+示範
+
+https://github.com/user-attachments/assets/bcbe37b0-3711-4703-bc96-c554770d423e
+
 
 把相片、影片、音樂做成有轉場、字幕、動態效果的相簿影片。操作方式參考 DVD 相簿製作軟體，分成三個步驟：**整理 → 個人化 → 製作**。
 
