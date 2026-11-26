@@ -43,16 +43,31 @@
 
   // ------------------------------------------------------------ 連結帳號
   async function link() {
-    await FA.api('yt_auth', {});
-    const b = FA.busy('已在瀏覽器開啟 Google 登入頁：\n請選擇要上傳影片的帳號並按「允許」，完成後會自動回到這裡。');
-    try {
-      for (let i = 0; i < 200; i++) {
-        await new Promise((r) => setTimeout(r, 1500));
-        const st = await FA.get('yt_status');
-        if (st.linked) { FA.toast('已連結 YouTube 頻道：' + (st.channel || ''), 'ok'); return st; }
-      }
-      throw new Error('等太久了，請再按一次「連結 YouTube 帳號」');
-    } finally { b.close(); }
+    const r = await FA.api('yt_auth', {});
+    let done = null, cancelled = false;
+    const status = h('p', { class: 'hint' }, '等待您在瀏覽器完成登入…');
+    const dlg = FA.dialog({ title: '連結 YouTube 帳號', width: '560px', esc: false, body: h('div', {},
+      h('p', {}, '已在瀏覽器（Chrome／Edge）開啟 Google 登入頁。'),
+      h('ol', { style: { paddingLeft: '1.3em', lineHeight: 1.7, margin: '4px 0' } },
+        h('li', {}, '瀏覽器視窗可能被本程式蓋住，請看工作列（Mac 看 Dock）切換到瀏覽器。'),
+        h('li', {}, '選擇要上傳影片的 Google 帳號。'),
+        h('li', {}, '看到「Google 尚未驗證這個應用程式」時，按「繼續」。'),
+        h('li', {}, '勾選允許上傳 YouTube 影片，按「繼續」。看到「連結成功」就可以回到這裡。')),
+      h('p', { class: 'hint' }, '如果瀏覽器顯示「存取權被封鎖」或「403 access_denied」：請到 Google Cloud 的「目標對象 → 測試使用者」加入這個 Google 帳號後再試一次。'),
+      status),
+      buttons: [{ label: '取消', onClick: () => { cancelled = true; return true; } },
+        { label: '📋 複製登入網址', onClick: () => { navigator.clipboard.writeText(r.url).then(() => FA.toast('已複製，請貼到瀏覽器的網址列', 'ok')); return false; } },
+        { label: '重新開啟登入頁', primary: true, onClick: async () => { await FA.api('yt_auth', {}).then((x) => (r.url = x.url)).catch(FA.err); return false; } }] });
+    for (let i = 0; i < 600 && !cancelled; i++) {
+      await new Promise((res) => setTimeout(res, 1500));
+      let st = null;
+      try { st = await FA.get('yt_status'); } catch (e) { /* 再試 */ }
+      if (st && st.linked) { done = st; break; }
+    }
+    if (!cancelled) document.querySelector('.dlg .x')?.click();
+    await dlg;
+    if (done) { FA.toast('已連結 YouTube 頻道：' + (done.channel || ''), 'ok'); return done; }
+    throw new Error(cancelled ? '已取消連結' : '等太久了，請再按一次「連結 YouTube 帳號」');
   }
 
   // 說明欄預設內容：相簿名稱＋用到的內附音樂授權標示（CC BY 一定要標示）

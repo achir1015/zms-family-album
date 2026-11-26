@@ -16,8 +16,8 @@ https://github.com/user-attachments/assets/bcbe37b0-3711-4703-bc96-c554770d423e
 
 | 平台 | 下載／使用 |
 |---|---|
-| Windows 11 | [ZMSFamilyAlbum-Setup-0.9.1.exe](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-Setup-0.9.1.exe)（按兩下安裝，會建立桌面捷徑） |
-| macOS（Intel／Apple 晶片） | [ZMSFamilyAlbum-0.9.1-mac.dmg](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.1-mac.dmg)（已公證，拖到「應用程式」） |
+| Windows 11 | [ZMSFamilyAlbum-Setup-0.9.2.exe](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-Setup-0.9.2.exe)（按兩下安裝，會建立桌面捷徑） |
+| macOS（Intel／Apple 晶片） | [ZMSFamilyAlbum-0.9.2-mac.dmg](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.2-mac.dmg)（已公證，拖到「應用程式」） |
 | 線上版（網頁） | https://achir1015.github.io/zms-family-album/ （Chrome／Edge／Safari，相簿存在瀏覽器裡，影片在您的電腦產生，不上傳） |
 | iPhone／iPad | 用 Safari 開 [線上安裝頁](https://achir1015.github.io/zms-family-album/ios/) 按「安裝」（限已登記的裝置） |
 | Android | [ZMSFamilyAlbum-0.9.0-android.apk](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.0-android.apk) |

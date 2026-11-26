@@ -172,16 +172,20 @@ class LocalDatabaseServer:
         self._need_pw = False
 
     def stop(self):
-        if not self.proc:
+        # 關閉視窗時「視窗關閉事件」與主程式都會呼叫 → 先取走 proc，第二次呼叫就什麼都不做
+        p, self.proc = self.proc, None
+        if not p:
             return
         try:
             subprocess.run([self._bin("mariadb-admin"), "-h127.0.0.1", "-P%d" % self.st.port, "-uroot",
                             "-p" + self.st.password, "shutdown"], capture_output=True, timeout=25,
                            creationflags=NO_WINDOW)
-            self.proc.wait(timeout=25)
+            p.wait(timeout=25)
         except Exception:
-            self.proc.kill()
-        self.proc = None
+            try:
+                p.kill()
+            except Exception:
+                pass
 
 
 DEFAULT_SCAN_START = 3538
