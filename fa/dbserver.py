@@ -123,6 +123,13 @@ class LocalDatabaseServer:
         log = open(self.log_path, "ab")
         self.proc = subprocess.Popen([self._bin("mariadbd"), "--defaults-file=" + self.ini_path, "--console"],
                                      stdout=log, stderr=subprocess.STDOUT, creationflags=NO_WINDOW)
+        if os.name != "nt":
+            # macOS 按「結束」（⌘Q）時程式會被直接終止、來不及執行關閉資料庫的程式碼 →
+            # 另開一個小監看程序：主程式不在了就送 SIGTERM 讓 MariaDB 正常關閉
+            subprocess.Popen(["/bin/sh", "-c", "while kill -0 %d 2>/dev/null; do sleep 1; done; "
+                              "kill -TERM %d 2>/dev/null" % (os.getpid(), self.proc.pid)],
+                             start_new_session=True, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
         t0 = time.time()
         while time.time() - t0 < timeout:
             if self.proc.poll() is not None:

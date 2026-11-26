@@ -66,6 +66,7 @@
 
   // ================================================================ 使用者選單
   function userMenu(btn) {
+    if (FA.WEB) return FA.menu(btn, [['🔊 語音動態教學', () => FA.Guide.menu()], ['🏠 家庭名稱', () => FA.Admin.company()], ['ℹ 關於', () => FA.Admin.about()]]);
     const items = [
       ['🔊 語音動態教學', () => FA.Guide.menu()],
       ['🔑 變更密碼', changePw],
@@ -246,9 +247,10 @@
     if (!S.project || $('.dlg-wrap')) return;
     const tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-    if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
-    else if (e.ctrlKey && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
-    else if (e.ctrlKey && e.key.toLowerCase() === 's') { e.preventDefault(); FA.saveNow(true); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && e.shiftKey) { e.preventDefault(); redo(); }
+    else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+    else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+    else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); FA.saveNow(true); }
     else if (e.key === ' ') { e.preventDefault(); FA.Player.toggle(); }
     else if (e.key === 'Delete') { FA.emit('delete-key'); }
   });

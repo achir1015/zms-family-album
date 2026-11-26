@@ -171,6 +171,97 @@
   }
   FA.adjFilter = adjFilter;
 
+  // ------------------------------------------------ 不支援 Canvas filter 的瀏覽器（Safari／Mac 版 WKWebView、iPhone）
+  // 把 CSS 濾鏡字串換成 4×5 色彩矩陣逐像素處理；blur 用縮小再放大近似
+  FA.CAN_FILTER = (() => { try { const x = document.createElement('canvas').getContext('2d'); if (!('filter' in x)) return false; x.filter = 'invert(1)'; return x.filter === 'invert(1)'; } catch (e) { return false; } })();
+  function fnMatrix(fn, v) {
+    const lr = 0.2126, lg = 0.7152, lb = 0.0722;
+    switch (fn) {
+      case 'brightness': return [v, 0, 0, 0, 0, 0, v, 0, 0, 0, 0, 0, v, 0, 0, 0, 0, 0, 1, 0];
+      case 'contrast': { const t = 0.5 * (1 - v); return [v, 0, 0, 0, t, 0, v, 0, 0, t, 0, 0, v, 0, t, 0, 0, 0, 1, 0]; }
+      case 'invert': { const s = 1 - 2 * v; return [s, 0, 0, 0, v, 0, s, 0, 0, v, 0, 0, s, 0, v, 0, 0, 0, 1, 0]; }
+      case 'saturate': case 'grayscale': {
+        const s = fn === 'grayscale' ? 1 - Math.min(1, v) : v;
+        return [lr + (1 - lr) * s, lg - lg * s, lb - lb * s, 0, 0, lr - lr * s, lg + (1 - lg) * s, lb - lb * s, 0, 0,
+          lr - lr * s, lg - lg * s, lb + (1 - lb) * s, 0, 0, 0, 0, 0, 1, 0];
+      }
+      case 'sepia': {
+        const a = 1 - Math.min(1, v);
+        return [0.393 + 0.607 * a, 0.769 - 0.769 * a, 0.189 - 0.189 * a, 0, 0, 0.349 - 0.349 * a, 0.686 + 0.314 * a, 0.168 - 0.168 * a, 0, 0,
+          0.272 - 0.272 * a, 0.534 - 0.534 * a, 0.131 + 0.869 * a, 0, 0, 0, 0, 0, 1, 0];
+      }
+      case 'hue-rotate': {
+        const c = Math.cos(v), s = Math.sin(v);
+        return [0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928, 0, 0,
+          0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283, 0, 0,
+          0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072, 0, 0, 0, 0, 0, 1, 0];
+      }
+    }
+    return null;
+  }
+  const PARSED = new Map();
+  function parseFilter(str) {
+    if (PARSED.has(str)) return PARSED.get(str);
+    const ms = []; let blur = 0;
+    const re = /([a-z-]+)\(([-\d.]+)(px|deg|%)?\)/g;
+    let t;
+    while ((t = re.exec(str || ''))) {
+      let v = parseFloat(t[2]);
+      if (t[3] === '%') v /= 100;
+      if (t[1] === 'blur') { blur = v; continue; }
+      if (t[1] === 'hue-rotate') v = (v * Math.PI) / 180;
+      const fm = fnMatrix(t[1], v);
+      if (fm) ms.push(fm);           // 瀏覽器每一步都會把顏色截在 0～255 → 逐步套用，不先合併
+    }
+    const r = { ms, blur };
+    PARSED.set(str, r);
+    return r;
+  }
+  // 對畫布本身套用濾鏡（就地修改）
+  FA.applyFilterInPlace = function (cv, str) {
+    const f = parseFilter(str);
+    const ctx = cv.getContext('2d');
+    if (f.blur > 0.3) {
+      const k = Math.max(2, Math.min(24, f.blur * 1.6));
+      const sm = document.createElement('canvas');
+      sm.width = Math.max(2, Math.round(cv.width / k)); sm.height = Math.max(2, Math.round(cv.height / k));
+      const sx = sm.getContext('2d'); sx.imageSmoothingQuality = 'high'; sx.drawImage(cv, 0, 0, sm.width, sm.height);
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.clearRect(0, 0, cv.width, cv.height); ctx.drawImage(sm, 0, 0, cv.width, cv.height); ctx.restore();
+    }
+    if (!f.ms.length) return cv;
+    const img = ctx.getImageData(0, 0, cv.width, cv.height), d = img.data;
+    for (const m of f.ms) {
+      const a0 = m[0], a1 = m[1], a2 = m[2], a4 = m[4] * 255, b0 = m[5], b1 = m[6], b2 = m[7], b4 = m[9] * 255, c0 = m[10], c1 = m[11], c2 = m[12], c4 = m[14] * 255;
+      for (let i = 0; i < d.length; i += 4) {        // Uint8ClampedArray 寫入時自動截在 0～255
+        const r = d[i], g = d[i + 1], b = d[i + 2];
+        d[i] = a0 * r + a1 * g + a2 * b + a4;
+        d[i + 1] = b0 * r + b1 * g + b2 * b + b4;
+        d[i + 2] = c0 * r + c1 * g + c2 * b + c4;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    return cv;
+  };
+  // 取得 src 套用濾鏡後的版本（相片會快取，影片每格重做）
+  const FCACHE = new WeakMap();
+  FA.filteredCopy = function (src, str, cache) {
+    if (cache) {
+      let m = FCACHE.get(src);
+      if (!m) FCACHE.set(src, (m = new Map()));
+      if (m.has(str)) return m.get(str);
+      const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
+      c.getContext('2d').drawImage(src, 0, 0);
+      FA.applyFilterInPlace(c, str);
+      m.set(str, c);
+      return c;
+    }
+    const c = FA._fTmp || (FA._fTmp = document.createElement('canvas'));
+    if (c.width !== src.width || c.height !== src.height) { c.width = src.width; c.height = src.height; }
+    const x = c.getContext('2d'); x.clearRect(0, 0, c.width, c.height); x.drawImage(src, 0, 0);
+    return FA.applyFilterInPlace(c, str);
+  };
+
   // 相片「烘焙」：旋轉、翻轉、裁切、紅眼、亮度對比飽和 → 一張畫布（快取）
   const BAKED = new Map();
   FA.bakePhoto = async function (url, it, maxSide) {
@@ -198,6 +289,7 @@
       x2.imageSmoothingQuality = 'high';
       x2.filter = adjFilter(it.adj) || 'none';
       x2.drawImage(c1, sx, sy, sw, sh, 0, 0, c2.width, c2.height);
+      if (!FA.CAN_FILTER && it.adj) { x2.filter = 'none'; FA.applyFilterInPlace(c2, adjFilter(it.adj)); }
       // 3) 模糊背景用的小圖
       const small = mk(48, Math.max(8, Math.round((48 * c2.height) / c2.width)));
       small.getContext('2d').drawImage(c2, 0, 0, small.width, small.height);
@@ -234,7 +326,7 @@
   }
 
   // ================================================================ 文字
-  FA.fontCSS = (o, px) => (o.italic ? 'italic ' : '') + (o.bold === false ? '400 ' : '700 ') + Math.round(px) + 'px "' + (o.font || 'Noto Sans TC') + '", "Microsoft JhengHei", sans-serif';
+  FA.fontCSS = (o, px) => (o.italic ? 'italic ' : '') + (o.bold === false ? '400 ' : '700 ') + Math.round(px) + 'px "' + (o.font || 'Noto Sans TC') + '", "Microsoft JhengHei", "PingFang TC", sans-serif';
   function textStyle(T) {
     const base = FA.TEXT_PRESET_BY[T.preset] || FA.TEXT_PRESET_BY.plain;
     const s = Object.assign({}, base);
@@ -656,6 +748,7 @@
           tx.rotate((rot * Math.PI) / 180);
           if (it.flip) tx.scale(-1, 1);
           tx.drawImage(v, -vw / 2, -vh / 2, vw, vh);
+          if (!FA.CAN_FILTER && it.adj) { tx.setTransform(1, 0, 0, 1, 0, 0); FA.applyFilterInPlace(tmp, FA.adjFilter(it.adj)); }
           src = tmp; sw = tw; sh = th; sx = 0; sy = 0; sW = tw; sH = th;
           small = null;
         }
@@ -686,8 +779,15 @@
       let dx = (W - dw) / 2 - ox * dw, dy = (H - dh) / 2 - oy * dh;
       const fx = FA.FX_BY[it.fx || 'none'] || FA.FX.none;
       ctx.imageSmoothingQuality = 'high';
-      ctx.filter = (fx && fx.filter) || 'none';
-      ctx.drawImage(src, sx, sy, sW, sH, dx, dy, dw, dh);
+      if (FA.CAN_FILTER || !(fx && fx.filter)) {
+        ctx.filter = (fx && fx.filter) || 'none';
+        ctx.drawImage(src, sx, sy, sW, sH, dx, dy, dw, dh);
+      } else {
+        // blur 的 px 是以輸出畫面為準 → 換算成來源圖的大小
+        const k = sW / Math.max(1, dw);
+        const str = fx.filter.replace(/blur\(([\d.]+)px\)/, (_, v) => 'blur(' + (parseFloat(v) * k).toFixed(2) + 'px)');
+        ctx.drawImage(FA.filteredCopy(src, str, it.type === 'photo'), sx, sy, sW, sH, dx, dy, dw, dh);
+      }
       ctx.filter = 'none';
       if (fx) this.fxOverlay(ctx, fx, lt, src, sx, sy, sW, sH, dx, dy, dw, dh);
       FA.drawFrame(ctx, it.frame || this.show.frame, W, H);
@@ -696,8 +796,10 @@
     fxOverlay(ctx, fx, lt, src, sx, sy, sW, sH, dx, dy, dw, dh) {
       const { W, H } = this;
       if (fx.glow) {
-        ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.35; ctx.filter = 'blur(' + Math.round(H / 60) + 'px)';
-        ctx.drawImage(src, sx, sy, sW, sH, dx, dy, dw, dh); ctx.restore();
+        ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.35;
+        if (FA.CAN_FILTER) { ctx.filter = 'blur(' + Math.round(H / 60) + 'px)'; ctx.drawImage(src, sx, sy, sW, sH, dx, dy, dw, dh); }
+        else ctx.drawImage(FA.filteredCopy(src, 'blur(' + (H / 60 * sW / Math.max(1, dw)).toFixed(1) + 'px)', src !== this.tmp), sx, sy, sW, sH, dx, dy, dw, dh);
+        ctx.restore();
       }
       if (fx.wood) {
         ctx.save(); ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = 0.55;

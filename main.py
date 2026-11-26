@@ -54,8 +54,10 @@ class NativeApi:
                 subprocess.Popen(["explorer", "/select,", os.path.normpath(path)])
             else:
                 os.startfile(path)
+        elif os.path.isfile(path):
+            subprocess.Popen(["open", "-R", path])        # 在 Finder 中顯示並選取
         else:
-            subprocess.Popen(["open", "-R" if os.path.isfile(path) else "", path])
+            subprocess.Popen(["open", path])
         return True
 
     def open_file(self, path):
@@ -71,6 +73,57 @@ class NativeApi:
         if url.startswith(("https://", "http://")):
             webbrowser.open(url)
         return True
+
+    # ---- 麥克風錄音（Mac 版 WKWebView 沒有 getUserMedia，用內附 FFmpeg 的 avfoundation 錄）
+    _mic = None
+    _mic_path = ""
+
+    def mic_start(self):
+        import subprocess
+        import tempfile
+        import time
+        if sys.platform != "darwin":
+            return {"error": "這個平台請用畫面內建的錄音"}
+        from fa.album import ffmpeg_exe
+        ff = ffmpeg_exe()
+        r = subprocess.run([ff, "-hide_banner", "-f", "avfoundation", "-list_devices", "true", "-i", ""],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+        devs, audio = [], False
+        for line in r.stderr.splitlines():
+            if "audio devices" in line:
+                audio = True
+            elif audio and "] [" in line:
+                idx, name = line.split("] [", 1)[1].split("] ", 1)
+                devs.append((idx, name))
+        if not devs:
+            return {"error": "找不到麥克風"}
+        # 優先用 Mac 內建麥克風（避免抓到連線中的 iPhone 麥克風）
+        pick = next((d for d in devs if any(k in d[1] for k in ("MacBook", "內建", "Built-in", "Microphone"))), devs[0])
+        NativeApi._mic_path = os.path.join(tempfile.gettempdir(), "fa-voice-%d.m4a" % int(time.time()))
+        NativeApi._mic = subprocess.Popen([ff, "-hide_banner", "-loglevel", "error", "-y", "-f", "avfoundation",
+                                           "-i", ":" + pick[0], "-ac", "1", "-c:a", "aac", "-b:a", "128k",
+                                           NativeApi._mic_path], stdin=subprocess.PIPE,
+                                          stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        time.sleep(0.6)
+        if NativeApi._mic.poll() is not None:
+            err = NativeApi._mic.stderr.read().decode("utf-8", "replace")[-300:]
+            NativeApi._mic = None
+            return {"error": "麥克風無法開啟（請在「系統設定 → 隱私權與安全性 → 麥克風」允許本程式）" + (("：" + err) if err else "")}
+        return {"ok": True, "device": pick[1]}
+
+    def mic_stop(self):
+        p = NativeApi._mic
+        NativeApi._mic = None
+        if not p:
+            return ""
+        try:
+            p.stdin.write(b"q")
+            p.stdin.flush()
+            p.wait(timeout=8)
+        except Exception:
+            p.kill()
+        path = NativeApi._mic_path
+        return path if os.path.isfile(path) and os.path.getsize(path) > 1000 else ""
 
     def toggle_fullscreen(self):
         self._window.toggle_fullscreen()
@@ -123,7 +176,7 @@ def run_desktop():
 
     win.events.closed += on_closed
     from fa.settings import data_dir
-    webview.start(gui="edgechromium", private_mode=False, storage_path=os.path.join(data_dir(), "webview"),
+    webview.start(gui="edgechromium" if os.name == "nt" else None, private_mode=False, storage_path=os.path.join(data_dir(), "webview"),
                   debug=bool(os.environ.get("FA_DEBUG")))
     server.stop_database()
     os._exit(0)

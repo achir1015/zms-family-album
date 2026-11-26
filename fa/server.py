@@ -154,7 +154,8 @@ def api_import_paths(h, q, body):
         try:
             if not os.path.isfile(p):
                 raise BizError("找不到檔案：" + p)
-            out.append(a.import_file(p, kind=body.get("kind") or None))
+            out.append(a.import_file(p, name=body.get("name") if len(body.get("paths") or []) == 1 else None,
+                                     kind=body.get("kind") or None))
         except BizError as e:
             errors.append(str(e))
     return dict(items=out, errors=errors)

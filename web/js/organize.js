@@ -45,7 +45,7 @@
       const tile = h('div', { class: 'tile' + (multi.has(it.id) ? ' sel' : ''), draggable: 'true', 'data-id': it.id, title: name + '\n按兩下：編輯；拖曳：調整順序' },
         im, h('div', { class: 'cap' }, h('span', { class: 'n' }, name), h('span', {}, FA.itemDur(it).toFixed(1) + ' 秒')));
       tile.addEventListener('click', (e) => {
-        if (e.ctrlKey) { multi.has(it.id) ? multi.delete(it.id) : multi.add(it.id); }
+        if (e.ctrlKey || e.metaKey) { multi.has(it.id) ? multi.delete(it.id) : multi.add(it.id); }
         else if (e.shiftKey && S.sel && S.sel.kind === 'item') {
           const a = sh.items.findIndex((x) => x.id === S.sel.id);
           const [lo, hi] = a < i ? [a, i] : [i, a];

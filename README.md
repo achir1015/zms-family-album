@@ -6,13 +6,17 @@
 
 ## 平台
 
-| 平台 | 狀態 |
+| 平台 | 下載／使用 |
 |---|---|
-| Windows 11 | 0.9.0：下載 [ZMSFamilyAlbum-Setup-0.9.0.exe](https://github.com/achir1015/zms-family-album/releases/latest) |
-| macOS（MacBook Pro） | 之後 |
-| 線上版（網頁） | 之後 |
-| iPhone／iPad（線上安裝） | 之後 |
-| Android | 之後 |
+| Windows 11 | [ZMSFamilyAlbum-Setup-0.9.0.exe](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-Setup-0.9.0.exe)（按兩下安裝，會建立桌面捷徑） |
+| macOS（Intel／Apple 晶片） | [ZMSFamilyAlbum-0.9.0-mac.dmg](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.0-mac.dmg)（已公證，拖到「應用程式」） |
+| 線上版（網頁） | https://achir1015.github.io/zms-family-album/ （Chrome／Edge／Safari，相簿存在瀏覽器裡，影片在您的電腦產生，不上傳） |
+| iPhone／iPad | 用 Safari 開 [線上安裝頁](https://achir1015.github.io/zms-family-album/ios/) 按「安裝」（限已登記的裝置） |
+| Android | [ZMSFamilyAlbum-0.9.0-android.apk](https://github.com/achir1015/zms-family-album/releases/latest/download/ZMSFamilyAlbum-0.9.0-android.apk) |
+
+電腦版（Windows／macOS）有完整功能：MariaDB 使用者與權限、52 種輸出格式、程式內更新。
+線上版與手機版用同一份網頁程式（`web/` → `tools/make_pages.py` → `docs/`），相簿與素材存在裝置裡（IndexedDB），
+輸出 MP4（H.264＋AAC，瀏覽器內建的 WebCodecs），沒有帳號與資料庫。
 
 ## 功能
 
@@ -61,6 +65,8 @@ py -3.12 -m venv .venv
 - `fa/`：Python 後端（本機伺服器、MariaDB、素材庫、FFmpeg 輸出、更新）
 - `web/`：畫面（純 JavaScript，WebGL 轉場、Canvas 繪製、Web Audio 混音），之後線上版與手機版共用
 - `tools/`：建置與資料產生（`build_windows.py`、`build_transitions.py`、`fetch_clipart.py`、`make_voice.py`、`make_icon.py`、`make_samples.py`、`fetch_music.py`）
+- `tools/build_macos.sh`（在 Mac 上，`tools/mac_in_terminal.sh` 會簽章＋公證）、`ios/`（XcodeGen，`ios/build-ipa.sh`）、`android/build.py`（不用 Gradle；金鑰 `android/zmsfamilyalbum.jks` 只在本機）
+- `web/js/local.js`：線上版／手機版的瀏覽器核心（取代 Python 伺服器）
 - `packaging/`：Inno Setup 安裝程式、圖示；`packaging/mariadb`、`packaging/ffmpeg` 不放 git；背景音樂檔 `web/assets/music/*.m4a` 也不放 git，建置前執行 `tools/fetch_music.py` 下載
 
 資料存放：`%LOCALAPPDATA%\ZMSFamilyAlbum`（資料庫、素材 media、設定）；輸出影片預設在「影片\家庭相簿」。

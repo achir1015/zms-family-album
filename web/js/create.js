@@ -40,7 +40,8 @@
     const msg = h('div', { class: 'hint', id: 'out-msg', style: { padding: '4px 0' } });
     box.append(h('h3', { style: { margin: '0 0 8px' } }, '輸出：' + p.name),
       h('div', { class: 'row' }, h('label', { class: 'fld' }, '檔名', name), h('label', { class: 'fld' }, '畫質', q)),
-      h('label', { class: 'fld' }, '儲存位置', h('div', { class: 'row' }, folder, h('span', { style: { flex: 'none' } }, pick))),
+      FA.WEB ? h('p', { class: 'hint' }, window.ZMSAndroid || window.ZMSIOS ? '製作完成後會出現分享選單，可以存到相簿、檔案或傳給 LINE。' : '製作完成後會自動下載到瀏覽器的「下載」資料夾。影片在您的電腦上產生，不會上傳到網路。')
+        : h('label', { class: 'fld' }, '儲存位置', h('div', { class: 'row' }, folder, h('span', { style: { flex: 'none' } }, pick))),
       h('label', { class: 'fld' }, '輸出範圍', range));
     if (p.cat === 'disc') box.append(h('p', { class: 'hint' }, '會產生符合 ' + p.name.replace('相容', '') + ' 規格的 MPEG 影片檔，可以用燒錄軟體（例如 Windows 內建的「燒錄到光碟」不支援影片光碟，建議用 ImgBurn、CDBurnerXP）燒成光碟在電視上播放。'));
     if (SHARE[p.id]) box.append(h('p', { class: 'hint' }, '製作完成後可以按「上傳到 ' + p.name + '」開啟網站，把影片拖進去上傳。'));
@@ -124,11 +125,14 @@
         const t = i / fps;
         if (hasVideo) await eng.seekVideos(t);
         eng.draw(t);
-        const blob = await new Promise((r) => eng.out.toBlob(r, 'image/jpeg', 0.93));
-        const pr = blob.arrayBuffer().then((buf) => FA.raw('export_frame', buf, { job: job.job, i })).catch((e) => (firstErr = firstErr || e));
-        inflight.add(pr);
-        pr.finally(() => inflight.delete(pr));
-        if (inflight.size >= 4) await Promise.race(inflight);
+        if (FA.localFrame) await FA.localFrame(job.job, eng.out, i);      // 線上版／手機版：直接用 WebCodecs 編碼
+        else {
+          const blob = await new Promise((r) => eng.out.toBlob(r, 'image/jpeg', 0.93));
+          const pr = blob.arrayBuffer().then((buf) => FA.raw('export_frame', buf, { job: job.job, i })).catch((e) => (firstErr = firstErr || e));
+          inflight.add(pr);
+          pr.finally(() => inflight.delete(pr));
+          if (inflight.size >= 4) await Promise.race(inflight);
+        }
         if (i % 6 === 0) {
           const f = (i + 1) / n, el = (Date.now() - t0) / 1000, eta = (el / f) * (1 - f);
           bar.style.width = (5 + f * 93).toFixed(1) + '%';
@@ -157,17 +161,14 @@
     }
   }
   async function finish(jobId) {
-    const r = await fetch('/api/export_finish?k=' + encodeURIComponent(FA.key) + '&job=' + jobId, { method: 'POST', headers: { 'X-Session': FA.sid }, body: '{}' });
-    const j = await r.json();
-    if (!r.ok || !j.ok) throw new Error(j.error || '輸出失敗');
-    return j.data;
+    return FA.raw('export_finish', new TextEncoder().encode('{}'), { job: jobId });
   }
   function done(r, p) {
     const btns = [];
     if (FA.native) btns.push({ label: '📂 開啟資料夾', onClick: () => { FA.native.reveal(r.path); return false; } }, { label: '▶ 播放影片', onClick: () => { FA.native.open_file(r.path); return false; } });
     if (SHARE[p.id]) btns.push({ label: '🌐 上傳到 ' + p.name, onClick: () => { FA.native ? FA.native.open_url(SHARE[p.id]) : window.open(SHARE[p.id]); FA.native && FA.native.reveal(r.path); return false; } });
     btns.push({ label: '關閉', primary: true, value: true });
-    FA.dialog({ title: '🎉 影片製作完成', body: h('div', {}, h('p', {}, '檔案：' + r.path), h('p', {}, '大小：' + FA.fmtSize(r.size))), buttons: btns });
+    FA.dialog({ title: '🎉 影片製作完成', body: h('div', {}, h('p', {}, (r.web ? '已下載：' : '檔案：') + r.path), h('p', {}, '大小：' + FA.fmtSize(r.size))), buttons: btns });
   }
   FA.on('tab', (t) => { if (t === 'create') render(); });
 })();

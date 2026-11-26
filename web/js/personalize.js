@@ -403,33 +403,59 @@
 
   // ------------------------------------------------------------ 錄旁白
   FA.recordVoice = async function () {
-    let stream;
-    try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
-    catch (e) { return FA.toast('無法使用麥克風：請確認電腦有麥克風，並允許本程式使用。', 'err'); }
-    const at = Math.max(0, FA.S.t || 0);
-    const rec = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : '' });
+    // 錄音方式：瀏覽器麥克風（Windows WebView2、Chrome）；Mac 版 WKWebView 沒有 getUserMedia → 改用程式內建 FFmpeg 錄音
+    const useNative = !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && FA.native && FA.native.mic_start;
+    let stream = null, rec = null;
     const chunks = [];
-    rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
-    const timer = h('div', { style: { fontSize: '34px', textAlign: 'center', fontFamily: 'Consolas' } }, '00:00');
+    if (!useNative) {
+      try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+      catch (e) { return FA.toast('無法使用麥克風：請確認電腦有麥克風，並允許本程式使用。', 'err'); }
+      rec = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : '' });
+      rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+    }
+    const at = Math.max(0, FA.S.t || 0);
+    const timer = h('div', { style: { fontSize: '34px', textAlign: 'center', fontFamily: 'Consolas, Menlo, monospace' } }, '00:00');
     const status = h('p', { style: { textAlign: 'center' } }, '按「開始錄音」後，畫面會從播放頭位置（' + FA.fmtTime(at) + '）開始播放（靜音），您可以邊看邊說。');
-    let t0 = 0, iv = null;
+    let t0 = 0, iv = null, recording = false, nativePath = '';
+    const stopAll = async () => {
+      clearInterval(iv); FA.Player.pause(); FA.Player.audio.muted = false;
+      if (useNative) { if (recording) nativePath = await FA.native.mic_stop(); }
+      else if (rec.state === 'recording') rec.stop();
+      recording = false;
+    };
     const res = await FA.dialog({ title: '🎤 錄旁白', body: h('div', {}, status, timer), esc: false, buttons: [
-      { label: '取消', value: null, onClick: () => { if (rec.state === 'recording') rec.stop(); stream.getTracks().forEach((t) => t.stop()); FA.Player.pause(); FA.Player.audio.muted = false; } },
-      { label: '開始錄音', primary: true, onClick: () => {
-        if (rec.state === 'recording') { rec.stop(); clearInterval(iv); FA.Player.pause(); FA.Player.audio.muted = false; return 'done'; }
-        rec.start(); t0 = Date.now(); status.textContent = '錄音中…說完請按「停止」';
+      { label: '取消', value: null, onClick: async () => { await stopAll(); if (stream) stream.getTracks().forEach((t) => t.stop()); } },
+      { label: '開始錄音', primary: true, onClick: async () => {
+        if (recording) { await stopAll(); return 'done'; }
+        if (useNative) {
+          const ok = await FA.native.mic_start();
+          if (!ok || ok.error) { FA.toast('無法使用麥克風：' + ((ok && ok.error) || '請在「系統設定 → 隱私權與安全性 → 麥克風」允許本程式'), 'err'); return false; }
+        } else rec.start();
+        recording = true; t0 = Date.now(); status.textContent = '錄音中…說完請按「停止」';
         FA.Player.audio.muted = true; FA.Player.playFrom(at);
         iv = setInterval(() => (timer.textContent = FA.fmtTime((Date.now() - t0) / 1000)), 200);
         document.querySelector('.dlg .btn.primary').textContent = '■ 停止';
         return false;
       } }] });
-    stream.getTracks().forEach((t) => t.stop());
+    if (stream) stream.getTracks().forEach((t) => t.stop());
     if (res !== 'done') return;
-    await new Promise((r) => (rec.state === 'inactive' ? r() : (rec.onstop = r)));
-    const blob = new Blob(chunks, { type: 'audio/webm' });
-    const file = new File([blob], '旁白 ' + new Date().toLocaleTimeString('zh-TW').replace(/:/g, '') + '.webm', { type: 'audio/webm' });
-    const [m] = await FA.uploadFiles([file], 'audio');
-    if (!m) return;
+    const name = '旁白 ' + new Date().toLocaleTimeString('zh-TW', { hour12: false }).replace(/:/g, '');
+    let m;
+    if (useNative) {
+      if (!nativePath) return FA.toast('沒有錄到聲音：第一次錄音時 macOS 會詢問是否允許使用麥克風，請按「允許」；若已拒絕，請到「系統設定 → 隱私權與安全性 → 麥克風」打開本程式。', 'err');
+      const r = await FA.api('import_paths', { paths: [nativePath], kind: 'audio', name: name + '.m4a' });
+      m = r.items[0];
+      if (!m) return FA.toast((r.errors || []).join('\n') || '旁白加入失敗', 'err');
+      FA.S.project.media[m.id] = m;
+    } else {
+      await new Promise((r) => (rec.state === 'inactive' ? r() : (rec.onstop = r)));
+      // Safari 錄出來是 MP4（AAC），Windows 版是 WebM（Opus）→ 副檔名跟著實際格式
+      const mt = rec.mimeType || (chunks[0] && chunks[0].type) || 'audio/webm';
+      const ext = /mp4|aac|m4a/.test(mt) ? '.m4a' : '.webm';
+      const file = new File([new Blob(chunks, { type: mt })], name + ext, { type: mt });
+      [m] = await FA.uploadFiles([file], 'audio');
+      if (!m) return;
+    }
     const A = { id: FA.uid(), media: m.id, start: at, vol: 1 };
     FA.edit((sh) => sh.voice.push(A));
     FA.select('voice', A.id);
